@@ -4,6 +4,6 @@ class ProtocolType(Enum):
     ICMP = auto
     TCP = auto
     UDP = auto
-    IP = auto
+    RAW = auto
     HTTPS = auto
     HTTP = auto

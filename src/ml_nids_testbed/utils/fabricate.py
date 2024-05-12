@@ -16,8 +16,18 @@ def fabricate(dst: str, port: int, payload: bytes, src: Optional[str]=None, prot
             fabricate_https(dst, port)
         case ProtocolType.HTTP:
             fabricate_http(dst, port)
+        case ProtocolType.RAW:
+            fabricate_raw(dst, payload, src)
         case _:
             raise ValueError(f"Protocol {protocol_type} is not supported.")
+
+def fabricate_raw(dst: str, payload: bytes, src: Optional[str]=None) -> None:
+    if src is None:
+        host = IP(dst=dst)
+    else:
+        host = IP(src=src, dst=dst)
+    raw_payload = Raw(load=payload)
+    send(host/raw_payload)
 
 def fabricate_tcp(dst: str, port: int, payload: bytes, src: Optional[str]=None, flags: str = "S") -> None:
     if src is None:
