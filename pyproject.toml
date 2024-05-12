@@ -1,0 +1,17 @@
+[project]
+name = "ml-nids-testbed"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "dawetmaster", email = "andika.naufal48@gmail.com"},
+]
+dependencies = [
+    "scapy>=2.5.0",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false

