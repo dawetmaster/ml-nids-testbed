@@ -6,13 +6,7 @@ import secrets
 
 from scapy.all import *
 from utils.fabricate import *
-
-# dummy functions, to be deleted when the function has implemenented in another module
-def send_tcp(ip, port, size):
-    pass
-
-def delay(seconds):
-    pass
+from enums.protocol_type import ProtocolType
 
 def boil_the_frog_discrete_incremental_bytes(
         ip: str, 
@@ -21,8 +15,9 @@ def boil_the_frog_discrete_incremental_bytes(
         max_bytes: int=65535, 
         increment_size: int=2, 
         packets_per_stage: int=100, 
-        delay: int=0.1,
-        src_ip: Optional[str]=None
+        delay: float=0.1,
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
         ):
     start_time = time.time()
     print("Starting boil the frog operation...")
@@ -32,60 +27,164 @@ def boil_the_frog_discrete_incremental_bytes(
     print(f"Max Bytes: {max_bytes}")
     for i in range(min_bytes, max_bytes+1, increment_size):
         for _ in range(packets_per_stage):
-            print(f"Sending a packet with {i} bytes to {ip}:{port} at time {time.time() - start_time}")
+            print(f"Sending a packebytes_in_packet *= exponent_factort with {i} bytes to {ip}:{port} at time {time.time() - start_time}")
             fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(i))
             time.sleep(delay)
 
-def dummy_boil_the_frog(min_bytes=0, max_bytes=1024):
-    pass
+def boil_the_frog_linear_bytes(
+        ip: str, 
+        port: int, 
+        min_bytes: int=0, 
+        max_bytes: int=65535,  
+        delay: float=0.1,
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Min Bytes: {min_bytes}")
+    print(f"Max Bytes: {max_bytes}")
+    for i in range(min_bytes, max_bytes+1):
+        print(f"Sending a packet with {i} bytes to {ip}:{port} at time {time.time() - start_time}")
+        fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(i))
+        time.sleep(delay)
 
-def dummy_boil_the_frog_incremental(ip, port, min_bytes=0, max_bytes=1024, increment_size=2, delay=0.1, packets_per_stage=100):
-    for i in range(min_bytes, max_bytes+1, increment_size):
-        for _ in range(packets_per_stage):
-            send_tcp(ip, port, i)
-            delay(delay)
-
-def dummy_boil_the_frog_exponential(ip, port, min_bytes=1, max_bytes=1024, factor=1.3, delay=0.1, packets_per_stage=100):
+def boil_the_frog_exponential_bytes(
+        ip: str, 
+        port: int, 
+        min_bytes: int=1, 
+        max_bytes: int=65535,  
+        exponent_factor: float=1.5,
+        packets_per_stage: int=100, 
+        delay: float=0.1,
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Min Bytes: {min_bytes}")
+    print(f"Max Bytes: {max_bytes}")
     bytes_in_packet = min_bytes
     while bytes_in_packet <= max_bytes:
+        rounded_packet_size = round(bytes_in_packet)
         for _ in range(packets_per_stage):
-            send_tcp(ip, port, bytes_in_packet)
-            delay(delay)
-        bytes_in_packet *= factor
+            print(f"Sending a packet with {rounded_packet_size} bytes to {ip}:{port} at time {time.time() - start_time}")
+            fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(rounded_packet_size))
+            time.sleep(delay)
+        bytes_in_packet *= exponent_factor
 
-def dummy_boil_the_frog_logarithmic(ip, port, min_bytes=1, max_bytes=1024, factor=1.3, delay=0.1, packets_per_stage=100):
+def boil_the_frog_logarithmic_bytes(
+        ip: str, 
+        port: int, 
+        min_bytes: int=100, 
+        max_bytes: int=65535,  
+        increment_threshold: int=5,
+        packets_per_stage: int=100, 
+        delay: float=0.1,
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Min Bytes: {min_bytes}")
+    print(f"Max Bytes: {max_bytes}")
     bytes_in_packet = min_bytes
+    reciproc_factor = 2
     while bytes_in_packet <= max_bytes:
+        rounded_packet_size = round(bytes_in_packet)
         for _ in range(packets_per_stage):
-            send_tcp(ip, port, bytes_in_packet)
-            delay(delay)
-        bytes_in_packet = int(bytes_in_packet * factor)
+            print(f"Sending a packet with {rounded_packet_size} bytes to {ip}:{port} at time {time.time() - start_time}")
+            fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(rounded_packet_size))
+            time.sleep(delay)
+        # Simulate logarithmic growth
+        increment_bytes = round(min_bytes / reciproc_factor)
+        if increment_bytes >= increment_threshold:
+            bytes_in_packet += increment_bytes
+            reciproc_factor += 1
+        else:
+            print(f"No significant increment: Increment is below threshold ({increment_threshold})")
+            break
 
-def send_packet(number, bytes, time, ip, port):
-    packet = IP(dst=ip) / TCP(dport=port, flags="S") / (b"A" * bytes)
-    print(f"Worker number {number} with {bytes} bytes on timestamp {time}")
-    send(packet)
+def boil_the_frog_sinusoidal_bytes(
+        ip: str, 
+        port: int, 
+        amplitude: int=100, 
+        yshift: int=2000,  
+        period: float=3,
+        max_time_seconds: float=60,
+        delay: float=0.1,
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Amplitude: {amplitude}")
+    print(f"Y-Shift: {yshift}")
+    print(f"Period: {period}")
+    while time.time() - start_time <= max_time_seconds:
+        current_time = time.time() - start_time
+        rounded_packet_size = round(yshift + math.sin(current_time / period) * amplitude)
+        print(f"Sending a packet with {rounded_packet_size} bytes to {ip}:{port} at time {time.time() - start_time}")
+        fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(rounded_packet_size))
+        time.sleep(delay)
 
-def dummy_boil_the_frog_sinusoidal_amplitude_bytes(ip, port, median_bytes=1024, min_amplitude=256, max_amplitude=512, period=3):
-    pass
+def boil_the_frog_discrete_incremental_rps_constant_bytes(
+        ip: str, 
+        port: int, 
+        min_rps: int=1, 
+        max_rps: int=65535,
+        bytes: int=128, 
+        increment_size: int=2, 
+        attempts_per_stage: int=100, 
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Min RPS: {min_rps}")
+    print(f"Max RPS: {max_rps}")
+    for rps in range(min_rps, max_rps+1, increment_size):
+        for j in range(attempts_per_stage):
+            print(f"Attempt {j} to send {rps} packets per second.")
+            for _ in range(rps):
+                print(f"Sending a packet with {bytes} bytes to {ip}:{port} at time {time.time() - start_time}")
+                threading.Thread(target=fabricate_udp, args=(ip, port), kwargs={"src": src_ip, "payload": secrets.token_bytes(bytes)})
+                # fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(i))
+            time.sleep(1)
 
-def worker(number, bytes, time):
-    print(f"Worker number {number} with {bytes} bytes on timestamp {time}")
+def boil_the_frog_linear_rps_constant_bytes(
+        ip: str, 
+        port: int, 
+        min_rps: int=1, 
+        max_rps: int=65535, 
+        bytes: int=128, 
+        increment_size: int=2, 
+        src_ip: Optional[str]=None,
+        protocol_type: ProtocolType=ProtocolType.UDP
+        ):
+    start_time = time.time()
+    print("Starting boil the frog operation...")
+    print(f"IP: {ip}")
+    print(f"Port: {port}")
+    print(f"Min RPS: {min_rps}")
+    print(f"Max RPS: {max_rps}")
+    for rps in range(min_rps, max_rps+1, increment_size):
+        for _ in range(rps):
+            print(f"Sending a packet with {bytes} bytes to {ip}:{port} at time {time.time() - start_time}")
+            threading.Thread(target=fabricate_udp, args=(ip, port), kwargs={"src": src_ip, "payload": secrets.token_bytes(bytes)})
+            # fabricate_udp(dst=ip, port=port, src=src_ip, payload=secrets.token_bytes(i))
+        time.sleep(1)
+
 
 if __name__ == '__main__':
-    boil_the_frog_discrete_incremental_bytes("10.5.0.2", 80)
-    # import threading
-    # import time
-    # import random
-    # PERIOD=4
-    # AMPLITUDE=4
-    # YSHIFT=8
-    # counter=0
-    # start_time = time.time()
-    # while True:
-    #     time.sleep(0.5)
-    #     requests = round(math.sin((time.time() - start_time)/PERIOD) * AMPLITUDE + YSHIFT)
-    #     print(requests)
-    #     for _ in range(requests):
-    #         threading.Thread(target=send_packet, args=(counter, random.randint(512,2048), time.time() - start_time, "10.5.0.2", 80)).start()
-    #         counter += 1
+    pass
