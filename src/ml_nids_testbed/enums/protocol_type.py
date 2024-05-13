@@ -1,9 +1,9 @@
 from enum import Enum, auto
 
 class ProtocolType(Enum):
-    ICMP = auto
-    TCP = auto
-    UDP = auto
-    RAW = auto
-    HTTPS = auto
-    HTTP = auto
+    ICMP = "ICMP"
+    TCP = "TCP"
+    UDP = "UDP"
+    RAW = "RAW"
+    HTTPS = "HTTPS"
+    HTTP = "HTTP"

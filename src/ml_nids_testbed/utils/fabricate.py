@@ -53,16 +53,20 @@ def fabricate_icmp(dst: str, payload: bytes, src: Optional[str]=None) -> None:
     icmp = ICMP()
     send(host/icmp/payload)
 
-def fabricate_https(dst: str, port: int=443, method: str="GET", uri: str="/") -> None:
+def fabricate_https(dst: str, port: int=443, method: str="GET", uri: str="/", wait_reply: bool=False) -> None:
     connection = http.client.HTTPSConnection(dst, port)
     connection.request(method, uri)
-    response = connection.getresponse()
-    print(response.read())
+    if wait_reply:
+        response = connection.getresponse()
+        print(response.read())
+    connection.close()
 
-def fabricate_http(dst: str, port: int=80, method: str="GET", uri: str="/") -> None:
+def fabricate_http(dst: str, port: int=80, method: str="GET", uri: str="/", wait_reply: bool=False) -> None:
     connection = http.client.HTTPConnection(dst, port)
     connection.request(method, uri)
-    response = connection.getresponse()
-    print(response.read())
+    if wait_reply:
+        response = connection.getresponse()
+        print(response.read())
+    connection.close()
     
     
