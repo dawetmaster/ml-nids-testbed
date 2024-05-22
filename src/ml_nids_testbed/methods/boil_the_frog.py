@@ -193,6 +193,3 @@ def boil_the_frog_linear_rps_constant_bytes(
             t.join()
         time.sleep(1)
 
-
-if __name__ == '__main__':
-    pass

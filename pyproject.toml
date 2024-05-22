@@ -14,7 +14,7 @@ license = {text = "MIT"}
 
 
 [tool.pdm]
-distribution = false
+distribution = true
 
 [tool.pdm.scripts]
 start = "src.ml_nids_testbed.methods.boil_the_frog:main"
