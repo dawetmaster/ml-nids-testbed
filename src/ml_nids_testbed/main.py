@@ -1,5 +1,3 @@
-from methods import boil_the_frog, smuggler
-from enums.protocol_type import ProtocolType
 from utils.log import setup_logging
 from utils.cli import setup_cli_parser
 import logging
@@ -17,6 +15,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
+    if args.test:
+        logger.info("Running in test mode")
+        print(args)
+        sys.exit(0)
     
     if args.subprogram == "boil_the_frog":
         pass

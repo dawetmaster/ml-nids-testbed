@@ -13,7 +13,7 @@ def generate_tcp(
         flags: str,
         timestamp: float = time.time(),
 ):
-    ip = IP(src_ip=src_ip, dst_ip=dst_ip)
+    ip = IP(src=src_ip, dst=dst_ip)
     tcp = TCP(sport=src_port, dport=dst_port, flags=flags)
     packet = ip/tcp/payload
     if isinstance(timestamp, float):
@@ -31,7 +31,7 @@ def generate_udp(
         payload: bytes,
         timestamp: float = time.time(),
 ):
-    ip = IP(src_ip=src_ip, dst_ip=dst_ip)
+    ip = IP(src=src_ip, dst=dst_ip)
     udp = UDP(sport=src_port, dport=dst_port)
     packet = ip/udp/payload
     if isinstance(timestamp, float):
@@ -47,7 +47,7 @@ def generate_icmp(
         payload: bytes,
         timestamp: float = time.time(),
 ):
-    ip = IP(src_ip=src_ip, dst_ip=dst_ip)
+    ip = IP(src=src_ip, dst=dst_ip)
     icmp = ICMP()
     packet = ip/icmp/payload
     if isinstance(timestamp, float):
