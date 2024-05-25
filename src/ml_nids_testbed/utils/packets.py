@@ -7,13 +7,14 @@ logger = logging.getLogger(__name__)
 
 class PacketSequence(object):
     def __init__(self, packets=None):
-        all_packets = True
-        for p in packets:
-            if not isinstance(p, Packet):
-                all_packets = False
-                break
-        if isinstance(packets, list) and all_packets:
-            self.__packets = packets
+        if isinstance(packets, list) and len(packets) > 0:
+            all_packets = True
+            for p in packets:
+                if not isinstance(p, Packet):
+                    all_packets = False
+                    break
+            if isinstance(packets, list) and all_packets:
+                self.__packets = packets
         else:
             self.__packets = []
             logger.warning("No packets is in this object because the provided packet sequence is invalid or empty")
@@ -51,7 +52,16 @@ class PacketSequence(object):
         for i in range(1, len(self.__packets)):
             self.__packets[i].time += shift_constant + (timestamps[i] - timestamps[i-1])
 
-    def mix_packets(self, *packet_sequences: PacketSequence, method=None):
+    def get_packet_sequence(self) -> list:
+        return self.__packets
+    
+    def __len__(self):
+        return len(self.__packets)
+    
+    def get_packet(self, index: int) -> Packet:
+        return self.__packets[index]
+
+    def mix_packets(self, *packet_sequences: "PacketSequence", method=None):
         if method is None: 
             raise ValueError("No mixing method specified")
         if method == "sorted":

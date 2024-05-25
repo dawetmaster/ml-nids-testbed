@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class PCAPHandler():
     def __init__(self, pcap_path: str):
         self.pcap_path = pcap_path
-        if not pathlib.Path.exists(pcap_path):
+        if not pathlib.Path(self.pcap_path).exists():
             logger.warning("pcap_path does not exist")
     def read(self):
         try:
@@ -19,9 +19,10 @@ class PCAPHandler():
             wrpcap(self.pcap_path, self.packets)
         except Exception as e:
             logger.error(e)
-    def write_from_packet(self, *args):
-        packets = list(args)
+    def write_from_packet(self, *packet_seq):
         try:
-            wrpcap(self.pcap_path, packets)
+            logger.info(f"Writing PCAP from packet to disk with path {self.pcap_path}")
+            for ps in packet_seq:
+                wrpcap(self.pcap_path, ps)
         except Exception as e:
             logger.error(e)

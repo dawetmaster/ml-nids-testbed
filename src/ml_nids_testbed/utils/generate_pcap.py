@@ -5,8 +5,11 @@ import time
 import random
 import secrets
 import copy
+import logging
 
 KNOWN_PACKET_TYPES = ["TCP", "UDP", "ICMP"]
+
+logger = logging.getLogger(__name__)
 
 def generate_boil_the_frog_linear(
         src_ip: str,
@@ -23,14 +26,20 @@ def generate_boil_the_frog_linear(
         initial_rps: int = 1,
         max_rps: int = 65535,
         rps_increment_per_second: float = 1,
+        intitial_timestamp: float = time.time(),
 ):
+    logger.debug("Initialising packet sequence...")
     packet_seq = PacketSequence()
-    initial_timestamp = time.time()
+
+    logger.info("Generating packet sequence...")
     for time_in_sec in range(0, duration):
         # Determine current RPS
         current_rps = min(max_rps, round(initial_rps + (rps_increment_per_second * time_in_sec)))
         # Make packet timestamps
         packet_timestamps = [initial_timestamp + time_in_sec + (i/current_rps) for i in range(current_rps)]
+        # Generate sequence numbers for TCP packets
+        tcp_seq_numbers = [0 for _ in range(0, 65535)]
+        # Make the packets
         # Determine packet types
         if obfuscate_packets:
             unselected_packets = copy.deepcopy(KNOWN_PACKET_TYPES)
@@ -56,10 +65,12 @@ def generate_boil_the_frog_linear(
                     dst_ip=dst_ip,
                     src_port=random.randint(1, 65535),
                     dst_port=destination_port,
+                    seq=tcp_seq_numbers[destination_port],
                     flags=tcp_flags,
                     payload=payload,
                     timestamp=timestamp
                 )
+                tcp_seq_numbers[destination_port] += 1
                 packet_seq.add_packet(packet)
             elif pkt_type == "UDP":
                 packet = generate_udp(
@@ -84,6 +95,7 @@ def generate_boil_the_frog_linear(
             else:
                 raise ValueError(f"Packet type {pkt_type} is not supported.")
     # Loop finished. Return the packet sequence
+    logger.info("Finished generating packet sequence.")
     return packet_seq
 
 def generate_boil_the_frog_exponential(
@@ -101,6 +113,7 @@ def generate_boil_the_frog_exponential(
         initial_rps: int = 1,
         max_rps: int = 65535,
         rps_exponent_per_second: float = 1,
+        intitial_timestamp: float = time.time(),
 ):
     packet_seq = PacketSequence()
     initial_timestamp = time.time()
@@ -178,7 +191,8 @@ def generate_boil_the_frog_sinusoidal(
         obfuscation_probability: float = 0.05,
         rps_amplitude: float = 300,
         rps_period: float = 3,
-        rps_yshift: float = 600
+        rps_yshift: float = 600,
+        intitial_timestamp: float = time.time(),
 ):
     packet_seq = PacketSequence()
     initial_timestamp = time.time()
@@ -241,82 +255,3 @@ def generate_boil_the_frog_sinusoidal(
                 raise ValueError(f"Packet type {pkt_type} is not supported.")
     # Loop finished. Return the packet sequence
     return packet_seq
-
-def generate_boil_the_frog(
-        src_ip: str,
-        dst_ip: str,
-        duration: int = 60,
-        default_packet_size: int = 128,
-        dst_port: int = 80,
-        varying_packet_size: bool = False,
-        varying_destination_ports: bool = False,
-        packet_type: str = "TCP",
-        tcp_flags: str = "S",
-        obfuscate_packets: bool = False,
-        obfuscation_probability: float = 0.05,
-        increment_method: str = "linear", # Also supports exponential and sinusoidal wave packets
-        initial_rps: int = 1,
-        max_rps: int = 65535,
-        rps_increment_per_second: float = 1,
-        rps_exponent_per_second: float = 1,
-        rps_amplitude: float = 300,
-        rps_period: float = 3,
-        rps_yshift: int = 100
-) -> PacketSequence:
-    packet_seq = PacketSequence()
-    if increment_method == "linear":
-        return generate_boil_the_frog_linear(
-            src_ip=src_ip,
-            dst_ip=dst_ip,
-            dst_port=dst_port,
-            duration=duration,
-            default_packet_size=default_packet_size,
-            varying_packet_size=varying_packet_size,
-            varying_destination_ports=varying_destination_ports,
-            packet_type=packet_type,
-            tcp_flags=tcp_flags,
-            obfuscate_packets=obfuscate_packets,
-            obfuscation_probability=obfuscation_probability,
-            initial_rps=initial_rps,
-            max_rps=max_rps,
-            rps_increment_per_second=rps_increment_per_second
-        )
-    elif increment_method == "exponential":
-        return generate_boil_the_frog_exponential(
-            src_ip=src_ip,
-            dst_ip=dst_ip,
-            dst_port=dst_port,
-            duration=duration,
-            default_packet_size=default_packet_size,
-            varying_packet_size=varying_packet_size,
-            varying_destination_ports=varying_destination_ports,
-            packet_type=packet_type,
-            tcp_flags=tcp_flags,
-            obfuscate_packets=obfuscate_packets,
-            obfuscation_probability=obfuscation_probability,
-            initial_rps=initial_rps,
-            max_rps=max_rps,
-            rps_exponent_per_second=rps_exponent_per_second
-        )
-    elif increment_method == "sinusoidal":
-        return generate_boil_the_frog_sinusoidal(
-            src_ip=src_ip,
-            dst_ip=dst_ip,
-            dst_port=dst_port,
-            duration=duration,
-            default_packet_size=default_packet_size,
-            varying_packet_size=varying_packet_size,
-            varying_destination_ports=varying_destination_ports,
-            packet_type=packet_type,
-            tcp_flags=tcp_flags,
-            obfuscate_packets=obfuscate_packets,
-            obfuscation_probability=obfuscation_probability,
-            rps_amplitude=rps_amplitude,
-            rps_period=rps_period,
-            rps_yshift=rps_yshift,
-        )
-    else:
-        raise ValueError(f"Increment method {increment_method} is not supported.")
-
-def generate_smuggler():
-    pass
