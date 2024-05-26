@@ -11,11 +11,13 @@ class PCAPHandler():
             logger.warning("pcap_path does not exist")
     def read(self):
         try:
+            logger.info(f"Reading PCAP from disk with path {self.pcap_path}")
             self.packets = rdpcap(self.pcap_path)
         except Exception as e:
             logger.error(e)
     def write(self):
         try:
+            logger.info(f"Writing PCAP to disk with path {self.pcap_path}")
             wrpcap(self.pcap_path, self.packets)
         except Exception as e:
             logger.error(e)

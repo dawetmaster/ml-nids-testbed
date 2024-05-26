@@ -36,54 +36,44 @@ def setup_cli_parser():
     scale_delay_parser = adjust_delay_subprogram.add_parser("scale_by")
     scale_delay_parser.add_argument(
         'factor',
-        type=int,
+        type=float,
         help="Delay factor",
     )
     scale_delay_parser.add_argument(
         "-i",
         "--input-file",
         dest="input_file",
+        required=True,
         help="Input file",
     )
     scale_delay_parser.add_argument(
         "-o",
         "--output-file",
         dest="output_file",
+        required=True,
         help="Output file",
-    )
-    scale_delay_parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="delay",
-        help="Debug mode",
     )
 
     #### Shift delay
     shift_delay_parser = adjust_delay_subprogram.add_parser("shift_by")
     shift_delay_parser.add_argument(
         'constant',
-        type=int,
+        type=float,
         help="Delay shift constant",
     )
     shift_delay_parser.add_argument(
         "-i",
         "--input-file",
+        required=True,
         dest="input_file",
         help="Input file",
     )
     shift_delay_parser.add_argument(
         "-o",
         "--output-file",
+        required=True,
         dest="output_file",
         help="Output file",
-    )
-    shift_delay_parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="delay",
-        help="Debug mode",
     )
 
     ## Set new packet_timestamp and normalise
@@ -101,17 +91,10 @@ def setup_cli_parser():
         help="Output file",
     )
     normalise_timestamp_parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="delay",
-        help="Debug mode",
-    )
-    normalise_timestamp_parser.add_argument(
         "--new-start_timestamp",
         type=float,
         dest="new_start_timestamp",
-        help="New start timestamp",
+        help="New start timestamp in UNIX notation. Default value is now.",
     )
 
     ## Boil the frog
@@ -131,12 +114,6 @@ def setup_cli_parser():
         required=True,
         dest="output_file",
         help="Output file",
-    )
-    linear_boil.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="debug",
     )
     linear_boil.add_argument(
         "--src-ip",
@@ -252,12 +229,6 @@ def setup_cli_parser():
         help="Output file",
     )
     exponential_boil.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="debug",
-    )
-    exponential_boil.add_argument(
         "--src-ip",
         type=str,
         required=True,
@@ -368,12 +339,6 @@ def setup_cli_parser():
         required=True,
         dest="output_file",
         help="Output file",
-    )
-    sinusoidal_boil.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        dest="debug",
     )
     sinusoidal_boil.add_argument(
         "--src-ip",

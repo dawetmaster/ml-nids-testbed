@@ -1,4 +1,5 @@
 from scapy.all import *
+from typing import List
 import logging
 import heapq
 import random
@@ -7,13 +8,13 @@ logger = logging.getLogger(__name__)
 
 class PacketSequence(object):
     def __init__(self, packets=None):
-        if isinstance(packets, list) and len(packets) > 0:
+        if isinstance(packets, PacketList) and len(packets) > 0:
             all_packets = True
             for p in packets:
                 if not isinstance(p, Packet):
                     all_packets = False
                     break
-            if isinstance(packets, list) and all_packets:
+            if all_packets:
                 self.__packets = packets
         else:
             self.__packets = []
@@ -31,10 +32,10 @@ class PacketSequence(object):
             raise ValueError("Invalid packet position")
         else:
             self.__packets.pop(position)
-    def reset_timestamp(self):
+    def normalise_timestamp(self, start_timestamp: float = time.time()):
         first_packet_timestamp = self.__packets[0].time
         for packet in self.__packets:
-            packet.time = packet.time - first_packet_timestamp
+            packet.time = packet.time - first_packet_timestamp + start_timestamp
     def uniformise_delay(self, delay: float=1.0):
         for i in range(1, len(self.__packets)):
             self.__packets[i].time = self.__packets[i-1].time + delay
@@ -58,13 +59,17 @@ class PacketSequence(object):
     def __len__(self):
         return len(self.__packets)
     
-    def get_packet(self, index: int) -> Packet:
+    def __getitem__(self, index: int) -> Packet:
         return self.__packets[index]
+    
+    def __setitem__(self, index: int, value: Packet):
+        self.__packets[index] = value
 
-    def mix_packets(self, *packet_sequences: "PacketSequence", method=None):
+    def mix_packets(self, *packet_sequences: List[Packet], method=None):
         if method is None: 
             raise ValueError("No mixing method specified")
         if method == "sorted":
+            logger.info("Mixing PCAPs using {method}")
             heap_queue = []
             for seq_index, seq in enumerate(packet_sequences):
                 if seq:
@@ -83,6 +88,7 @@ class PacketSequence(object):
                 if packet_index + 1 < len(packet_sequences[seq_index]):
                     heapq.heappush(heap_queue, (packet_sequences[seq_index][packet_index+1].time, seq_index, packet_index+1, packet_sequences[seq_index][packet_index+1]))
         elif method == "random":
+            logger.info("Mixing PCAPs using {method}")
             number_of_sequences = len(packet_sequences)
             all_sequences_exhausted = False
             seq_indices = [0 for _ in packet_sequences]
@@ -94,6 +100,7 @@ class PacketSequence(object):
                 if seq_indices[random_seq_index] >= len(packet_sequences[random_seq_index]):
                     non_exhausted_sequences.remove(random_seq_index)
         elif method == "round_robin":
+            logger.info("Mixing PCAPs using {method}")
             number_of_sequences = len(packet_sequences)
             all_sequences_exhausted = False
             seq_indices = [0 for _ in packet_sequences]

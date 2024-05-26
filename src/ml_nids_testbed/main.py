@@ -1,9 +1,11 @@
 from argparse import ArgumentParser
 from utils.log import setup_logging
 from utils.cli import setup_cli_parser
-from utils.generate_pcap import generate_boil_the_frog_linear, generate_boil_the_frog_exponential, generate_boil_the_frog_sinusoidal
 from utils.pcap import PCAPHandler
-from utils.mix_pcap import mix_pcap
+from programs.boil_the_frog import generate_boil_the_frog_linear, generate_boil_the_frog_exponential, generate_boil_the_frog_sinusoidal
+from programs.normalise_timestamp import normalise_timestamp
+from programs.mix_pcap import mix_pcap
+from programs.adjust_delay import scale_delay, shift_delay
 import logging
 import sys
 
@@ -109,13 +111,25 @@ if __name__ == '__main__':
         pcap_handlers = [PCAPHandler(ipath) for ipath in args.input_file]
         output_pcap_handler = PCAPHandler(args.output_file)
         logger.info("Handling PCAP mixing...")
+        logger.debug("mixing method: %s", args.mixing_method)
         mix_pcap(pcap_handlers, output_pcap_handler, args.mixing_method)
     elif args.subprogram == "normalise_timestamp":
         if len(sys.argv) == 2:
             display_help_and_exit(parser_dict["normalise_timestamp"]["main"])
+        if args.input_file is None or args.output_file is None:
+            parser_dict["mix_pcap"]["main"].print_help(sys.stderr)
+            logger.error("Either input file or output file is not specified. Please specify the input and output PCAP file.")
+            sys.exit(1)
+        normalise_timestamp(PCAPHandler(args.input_file), PCAPHandler(args.output_file), args.new_start_timestamp)
     elif args.subprogram == "adjust_delay":
         if len(sys.argv) == 2:
             display_help_and_exit(parser_dict["adjust_delay"]["main"])
+        if args.adjust_delay_subprogram == "shift_by":
+            logger.info("Shifting delay by %d seconds", args.constant)
+            shift_delay(PCAPHandler(args.input_file), PCAPHandler(args.output_file), args.constant)
+        elif args.adjust_delay_subprogram == "scale_by":
+            logger.info("Scaling delay by %f", args.factor)
+            scale_delay(PCAPHandler(args.input_file), PCAPHandler(args.output_file), args.factor)
     else:
         parser.print_help(sys.stderr)
         sys.exit(1)
