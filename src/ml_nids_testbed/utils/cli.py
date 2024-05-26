@@ -1,4 +1,5 @@
 import argparse
+import time
 
 def setup_cli_parser():
     parser = argparse.ArgumentParser(
@@ -127,6 +128,7 @@ def setup_cli_parser():
     linear_boil.add_argument(
         "-o",
         "--output-file",
+        required=True,
         dest="output_file",
         help="Output file",
     )
@@ -139,20 +141,23 @@ def setup_cli_parser():
     linear_boil.add_argument(
         "--src-ip",
         type=str,
+        required=True,
         dest="src_ip",
         help="Source IP",
     )
     linear_boil.add_argument(
         "--dst-ip",
         type=str,
+        required=True,
         dest="dst_ip",
         help="Destination IP",
     )
     linear_boil.add_argument(
         "--dst-port",
         type=int,
+        default=80,
         dest="dst_port",
-        help="Destination port",
+        help="Destination port. Default is 80.",
     )
     linear_boil.add_argument(
         "--duration",
@@ -164,15 +169,15 @@ def setup_cli_parser():
     linear_boil.add_argument(
         "--default-packet-size",
         type=int,
-        default=80,
+        default=128,
         dest="default_packet_size",
-        help="Default packet size in bytes",
+        help="Default packet size in bytes. Default is 128",
     )
     linear_boil.add_argument(
         "--varying-packet-size",
         action="store_true",
         dest="varying_packet_size",
-        help="Varying packet size",
+        help="Varying packet size (content) between 0 to 65000.",
     )
     linear_boil.add_argument(
         "--varying-destination-ports",
@@ -199,28 +204,28 @@ def setup_cli_parser():
         "--obfuscate_packets",
         type=str,
         dest="obfuscate_packets",
-        help="Obfuscate packets",
+        help="Choose whether to generate obfuscated packets or not.",
     )
     linear_boil.add_argument(
         "--obfuscation-probability",
         type=float,
         default=0.05,
         dest="obfuscation_probability",
-        help="Obfuscation probability",
+        help="Obfuscation probability - Send packets not on primary type. Default value is 0.05.",
     )
     linear_boil.add_argument(
         "--initial-rps",
         type=int,
         default=1,
         dest="initial_rps",
-        help="Initial RPS",
+        help="Initial RPS. Use this as starting request per second. Default value is 1.",
     )
     linear_boil.add_argument(
         "--max-rps",
         type=int,
         default=65535,
         dest="max_rps",
-        help="Max RPS",
+        help="Max RPS. Use this as the upper limit for the packet RPS. Default is 65535.",
     )
     linear_boil.add_argument(
         "--rps-increment-per-second",
@@ -229,12 +234,20 @@ def setup_cli_parser():
         dest="rps_increment_per_second",
         help="RPS increment per second",
     )
+    linear_boil.add_argument(
+        "--initial-timestamp",
+        type=float,
+        default=time.time(),
+        dest="initial_timestamp",
+        help="Initial timestamp in UNIX notation. Default is now.",
+    )
 
     #### Exponential boil
     exponential_boil = boil_the_frog_subprogram.add_parser("exponential")
     exponential_boil.add_argument(
         "-o",
         "--output-file",
+        required=True,
         dest="output_file",
         help="Output file",
     )
@@ -247,38 +260,43 @@ def setup_cli_parser():
     exponential_boil.add_argument(
         "--src-ip",
         type=str,
+        required=True,
         dest="src_ip",
         help="Source IP",
     )
     exponential_boil.add_argument(
         "--dst-ip",
         type=str,
+        required=True,
         dest="dst_ip",
         help="Destination IP",
     )
     exponential_boil.add_argument(
         "--dst-port",
         type=int,
+        default=80,
         dest="dst_port",
-        help="Destination port",
+        help="Destination port. Default is 80.",
     )
     exponential_boil.add_argument(
         "--duration",
         type=int,
+        default=60,
         dest="duration",
         help="Duration",
     )
     exponential_boil.add_argument(
         "--default-packet-size",
         type=int,
+        default=128,
         dest="default_packet_size",
-        help="Default packet size in bytes",
+        help="Default packet size in bytes. Default is 128",
     )
     exponential_boil.add_argument(
         "--varying-packet-size",
         action="store_true",
         dest="varying_packet_size",
-        help="Varying packet size",
+        help="Varying packet size (content) between 0 to 65000.",
     )
     exponential_boil.add_argument(
         "--varying-destination-ports",
@@ -289,6 +307,8 @@ def setup_cli_parser():
     exponential_boil.add_argument(
         "--packet-type",
         type=str,
+        default="TCP",
+        choices=["TCP", "UDP", "ICMP"],
         dest="packet_type",
         help="Packet type",
     )
@@ -296,31 +316,35 @@ def setup_cli_parser():
         "--tcp-flags",
         type=str,
         dest="tcp_flags",
+        default="S",
         help="TCP flags. Options provided are 'S', 'A', and 'F', can be combined. By default, tcp_flags is S (denotes SYN)",
     )
     exponential_boil.add_argument(
         "--obfuscate_packets",
         type=str,
         dest="obfuscate_packets",
-        help="Obfuscate packets",
+        help="Choose whether to generate obfuscated packets or not.",
     )
     exponential_boil.add_argument(
         "--obfuscation-probability",
         type=float,
+        default=0.05,
         dest="obfuscation_probability",
-        help="Obfuscation probability",
+        help="Obfuscation probability - Send packets not on primary type. Default value is 0.05.",
     )
     exponential_boil.add_argument(
         "--initial-rps",
         type=int,
+        default=1,
         dest="initial_rps",
-        help="Initial RPS",
+        help="Initial RPS. Use this as starting request per second. Default value is 1.",
     )
     exponential_boil.add_argument(
         "--max-rps",
         type=int,
+        default=65535,
         dest="max_rps",
-        help="Max RPS",
+        help="Max RPS. Use this as the upper limit for the packet RPS. Default is 65535.",
     )
     exponential_boil.add_argument(
         "--rps-exponent-per-second",
@@ -328,12 +352,20 @@ def setup_cli_parser():
         dest="rps_exponent_per_second",
         help="RPS exponent per second",
     )
+    exponential_boil.add_argument(
+        "--initial-timestamp",
+        type=float,
+        default=time.time(),
+        dest="initial_timestamp",
+        help="Initial timestamp in UNIX notation. Default is now.",
+    )
 
     #### Sinusoidal boil
     sinusoidal_boil = boil_the_frog_subprogram.add_parser("sinusoidal")
     sinusoidal_boil.add_argument(
         "-o",
         "--output-file",
+        required=True,
         dest="output_file",
         help="Output file",
     )
@@ -346,38 +378,43 @@ def setup_cli_parser():
     sinusoidal_boil.add_argument(
         "--src-ip",
         type=str,
+        required=True,
         dest="src_ip",
         help="Source IP",
     )
     sinusoidal_boil.add_argument(
         "--dst-ip",
         type=str,
+        required=True,
         dest="dst_ip",
         help="Destination IP",
     )
     sinusoidal_boil.add_argument(
         "--dst-port",
         type=int,
+        default=80,
         dest="dst_port",
-        help="Destination port",
+        help="Destination port. Default is 80.",
     )
     sinusoidal_boil.add_argument(
         "--duration",
         type=int,
+        default=60,
         dest="duration",
         help="Duration",
     )
     sinusoidal_boil.add_argument(
         "--default-packet-size",
         type=int,
+        default=128,
         dest="default_packet_size",
-        help="Default packet size in bytes",
+        help="Default packet size in bytes. Default is 128",
     )
     sinusoidal_boil.add_argument(
         "--varying-packet-size",
         action="store_true",
         dest="varying_packet_size",
-        help="Varying packet size",
+        help="Varying packet size (content) between 0 to 65000.",
     )
     sinusoidal_boil.add_argument(
         "--varying-destination-ports",
@@ -388,6 +425,8 @@ def setup_cli_parser():
     sinusoidal_boil.add_argument(
         "--packet-type",
         type=str,
+        default="TCP",
+        choices=["TCP", "UDP", "ICMP"],
         dest="packet_type",
         help="Packet type",
     )
@@ -395,37 +434,49 @@ def setup_cli_parser():
         "--tcp-flags",
         type=str,
         dest="tcp_flags",
+        default="S",
         help="TCP flags. Options provided are 'S', 'A', and 'F', can be combined. By default, tcp_flags is S (denotes SYN)",
     )
     sinusoidal_boil.add_argument(
         "--obfuscate_packets",
         type=str,
         dest="obfuscate_packets",
-        help="Obfuscate packets",
+        help="Choose whether to generate obfuscated packets or not.",
     )
     sinusoidal_boil.add_argument(
         "--obfuscation-probability",
         type=float,
+        default=0.05,
         dest="obfuscation_probability",
-        help="Obfuscation probability",
+        help="Obfuscation probability - Send packets not on primary type. Default value is 0.05.",
     )
     sinusoidal_boil.add_argument(
         "--rps-amplitude",
         type=int,
+        default=100,
         dest="rps_amplitude",
-        help="RPS Amplitude (farthest distance from equillibrium)",
+        help="RPS Amplitude (farthest distance from equillibrium). Default value is 100.",
     )
     sinusoidal_boil.add_argument(
         "--rps-yshift",
         type=int,
+        default=100,
         dest="rps_yshift",
-        help="RPS Y-Shift (the Y-shift of the packet RPS)",
+        help="RPS Y-Shift (the Y-shift of the packet RPS). Default value is 100.",
     )
     sinusoidal_boil.add_argument(
         "--rps-period",
         type=float,
+        default=3.0,
         dest="rps_period",
-        help="Period of the RPS oscillation",
+        help="Period of the RPS oscillation in seconds. Default is 3.0.",
+    )
+    sinusoidal_boil.add_argument(
+        "--initial-timestamp",
+        type=float,
+        default=time.time(),
+        dest="initial_timestamp",
+        help="Initial timestamp in UNIX notation. Default is now.",
     )
 
     ## Mix PCAPs, also functions as filtering
@@ -437,38 +488,26 @@ def setup_cli_parser():
         dest="verbose",
     )
     mix_pcap_parser.add_argument(
-        "-p",
-        "--packet",
+        "-i",
+        "--input-file",
         action="append",
-        dest="packet",
-        help="Packet type to mix",
-        choices=["TCP", "UDP", "ICMP"],
-    )
-    mix_pcap_parser.add_argument(
-        "--pcap-file",
-        action="append",
-        dest="pcap_file",
-        help="Pcap file to mix",
-    )
-    mix_pcap_parser.add_argument(
-        "--src-ip",
-        type=str,
-        action="append",
-        dest="src_ip",
-        help="Source IP",
-    )
-    mix_pcap_parser.add_argument(
-        "--dst-ip",
-        type=str,
-        action="append",
-        dest="dst_ip",
-        help="Destination IP",
+        dest="input_file",
+        help="Input PCAP file(s) to mix. For more inputs, use this more than once.",
     )
     mix_pcap_parser.add_argument(
         "-o",
         "--output-file",
+        required=True,
         dest="output_file",
         help="Output file",
+    )
+    mix_pcap_parser.add_argument(
+        "-m",
+        "--mixing-method",
+        default="sorted",
+        choices=["sorted", "random", "round_robin"],
+        dest="mixing_method",
+        help="PCAP mixing method. By default, mixing returns sorted timestamp.",
     )
 
     parser_dict = {

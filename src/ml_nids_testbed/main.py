@@ -3,6 +3,7 @@ from utils.log import setup_logging
 from utils.cli import setup_cli_parser
 from utils.generate_pcap import generate_boil_the_frog_linear, generate_boil_the_frog_exponential, generate_boil_the_frog_sinusoidal
 from utils.pcap import PCAPHandler
+from utils.mix_pcap import mix_pcap
 import logging
 import sys
 
@@ -46,7 +47,8 @@ if __name__ == '__main__':
                 obfuscation_probability=args.obfuscation_probability,
                 initial_rps=args.initial_rps,
                 max_rps=args.max_rps,
-                rps_increment_per_second=args.rps_increment_per_second
+                rps_increment_per_second=args.rps_increment_per_second,
+                initial_timestamp=args.initial_timestamp,
             )
             logger.info("Handling PCAP writing...")
             ph = PCAPHandler(args.output_file)
@@ -66,7 +68,8 @@ if __name__ == '__main__':
                 obfuscation_probability=args.obfuscation_probability,
                 initial_rps=args.initial_rps,
                 max_rps=args.max_rps,
-                rps_exponent_per_second=args.rps_increment_per_second
+                rps_exponent_per_second=args.rps_increment_per_second,
+                initial_timestamp=args.initial_timestamp,
             )
             logger.info("Handling PCAP writing...")
             ph = PCAPHandler(args.output_file)
@@ -87,6 +90,7 @@ if __name__ == '__main__':
                 rps_amplitude=args.rps_amplitude,
                 rps_period=args.rps_period,
                 rps_yshift=args.rps_yshift,
+                initial_timestamp=args.initial_timestamp,
             )
             logger.info("Handling PCAP writing...")
             ph = PCAPHandler(args.output_file)
@@ -97,8 +101,15 @@ if __name__ == '__main__':
     elif args.subprogram == "mix_pcap":
         if len(sys.argv) == 2:
             display_help_and_exit(parser_dict["mix_pcap"]["main"])
-        logger.info("Handling PCAP writing...")
-        output_pcap = PCAPHandler(args.output_file)
+        if args.input_file is None:
+            parser_dict["mix_pcap"]["main"].print_help(sys.stderr)
+            logger.error("No input file specified. Please specify at least one PCAP file.")
+            sys.exit(1)
+        logger.debug("Starting pcap handlers")
+        pcap_handlers = [PCAPHandler(ipath) for ipath in args.input_file]
+        output_pcap_handler = PCAPHandler(args.output_file)
+        logger.info("Handling PCAP mixing...")
+        mix_pcap(pcap_handlers, output_pcap_handler, args.mixing_method)
     elif args.subprogram == "normalise_timestamp":
         if len(sys.argv) == 2:
             display_help_and_exit(parser_dict["normalise_timestamp"]["main"])

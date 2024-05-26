@@ -26,7 +26,7 @@ def generate_boil_the_frog_linear(
         initial_rps: int = 1,
         max_rps: int = 65535,
         rps_increment_per_second: float = 1,
-        intitial_timestamp: float = time.time(),
+        initial_timestamp: float = time.time(),
 ):
     logger.debug("Initialising packet sequence...")
     packet_seq = PacketSequence()
@@ -113,10 +113,9 @@ def generate_boil_the_frog_exponential(
         initial_rps: int = 1,
         max_rps: int = 65535,
         rps_exponent_per_second: float = 1,
-        intitial_timestamp: float = time.time(),
+        initial_timestamp: float = time.time(),
 ):
     packet_seq = PacketSequence()
-    initial_timestamp = time.time()
     for time_in_sec in range(0, duration):
         # Determine current RPS
         current_rps = min(max_rps, round(initial_rps * (rps_exponent_per_second ** time_in_sec)))
@@ -192,10 +191,9 @@ def generate_boil_the_frog_sinusoidal(
         rps_amplitude: float = 300,
         rps_period: float = 3,
         rps_yshift: float = 600,
-        intitial_timestamp: float = time.time(),
+        initial_timestamp: float = time.time(),
 ):
     packet_seq = PacketSequence()
-    initial_timestamp = time.time()
     for time_in_sec in range(0, duration):
         # Determine current RPS
         current_rps = max(1, round(rps_yshift + (rps_amplitude * math.sin(time_in_sec / rps_period * math.pi))))
