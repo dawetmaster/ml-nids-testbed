@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+service MetricsService {
+    rpc GetMetrics (Empty) returns (Metrics);
+    rpc GetHeartbeat (Empty) returns (Heartbeat);
+}
+
+message Empty {}
+
+message Heartbeat {
+    string status = 1;
+}
+
+message Metrics {
+    float cpu = 1;
+    float memory = 2;
+}

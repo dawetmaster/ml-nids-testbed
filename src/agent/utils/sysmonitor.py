@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 from concurrent import futures
 
 class SystemMonitor(utils.sysmon_pb2_grpc.MetricsServiceServicer):
-    def get_metrics(self, request, context):
+    def GetMetrics(self, request, context):
         cpu_usage = psutil.cpu_percent(interval=1)
         
         memory_info = psutil.virtual_memory()

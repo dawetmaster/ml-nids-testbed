@@ -22,4 +22,5 @@ license = {text = "MIT"}
 distribution = true
 
 [tool.pdm.scripts]
-server = "python src/agent/agent.py"
+agent = "python src/agent/agent.py"
+controller = "python src/controller/main.py"

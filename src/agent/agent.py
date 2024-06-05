@@ -16,7 +16,7 @@ def main(port: int=5758):
         print(e)
     except KeyboardInterrupt:
         logger.info("Shutting down server gracefully...")
-        server.stop(0)
+        server.stop(3)
         logger.info("Server stopped")
 
 if __name__ == '__main__':
