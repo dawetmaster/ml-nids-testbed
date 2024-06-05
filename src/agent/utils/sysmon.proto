@@ -15,3 +15,13 @@ message Metrics {
     float cpu = 1;
     float memory = 2;
 }
+
+message CPUStopwatch {
+    float start = 1;
+    float end = 2;
+}
+
+message NTPStopwatch{
+    float start = 1;
+    float end = 2;
+}

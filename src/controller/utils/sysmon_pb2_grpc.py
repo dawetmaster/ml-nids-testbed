@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from utils import sysmon_pb2 as utils_dot_sysmon__pb2
+import sysmon_pb2 as sysmon__pb2
 
 GRPC_GENERATED_VERSION = '1.64.1'
 GRPC_VERSION = grpc.__version__
@@ -20,7 +20,7 @@ except ImportError:
 if _version_not_supported:
     warnings.warn(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in utils/sysmon_pb2_grpc.py depends on'
+        + f' but the generated code in sysmon_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -41,13 +41,13 @@ class MetricsServiceStub(object):
         """
         self.GetMetrics = channel.unary_unary(
                 '/MetricsService/GetMetrics',
-                request_serializer=utils_dot_sysmon__pb2.Empty.SerializeToString,
-                response_deserializer=utils_dot_sysmon__pb2.Metrics.FromString,
+                request_serializer=sysmon__pb2.Empty.SerializeToString,
+                response_deserializer=sysmon__pb2.Metrics.FromString,
                 _registered_method=True)
         self.GetHeartbeat = channel.unary_unary(
                 '/MetricsService/GetHeartbeat',
-                request_serializer=utils_dot_sysmon__pb2.Empty.SerializeToString,
-                response_deserializer=utils_dot_sysmon__pb2.Heartbeat.FromString,
+                request_serializer=sysmon__pb2.Empty.SerializeToString,
+                response_deserializer=sysmon__pb2.Heartbeat.FromString,
                 _registered_method=True)
 
 
@@ -71,13 +71,13 @@ def add_MetricsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetMetrics': grpc.unary_unary_rpc_method_handler(
                     servicer.GetMetrics,
-                    request_deserializer=utils_dot_sysmon__pb2.Empty.FromString,
-                    response_serializer=utils_dot_sysmon__pb2.Metrics.SerializeToString,
+                    request_deserializer=sysmon__pb2.Empty.FromString,
+                    response_serializer=sysmon__pb2.Metrics.SerializeToString,
             ),
             'GetHeartbeat': grpc.unary_unary_rpc_method_handler(
                     servicer.GetHeartbeat,
-                    request_deserializer=utils_dot_sysmon__pb2.Empty.FromString,
-                    response_serializer=utils_dot_sysmon__pb2.Heartbeat.SerializeToString,
+                    request_deserializer=sysmon__pb2.Empty.FromString,
+                    response_serializer=sysmon__pb2.Heartbeat.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -105,8 +105,8 @@ class MetricsService(object):
             request,
             target,
             '/MetricsService/GetMetrics',
-            utils_dot_sysmon__pb2.Empty.SerializeToString,
-            utils_dot_sysmon__pb2.Metrics.FromString,
+            sysmon__pb2.Empty.SerializeToString,
+            sysmon__pb2.Metrics.FromString,
             options,
             channel_credentials,
             insecure,
@@ -132,8 +132,8 @@ class MetricsService(object):
             request,
             target,
             '/MetricsService/GetHeartbeat',
-            utils_dot_sysmon__pb2.Empty.SerializeToString,
-            utils_dot_sysmon__pb2.Heartbeat.FromString,
+            sysmon__pb2.Empty.SerializeToString,
+            sysmon__pb2.Heartbeat.FromString,
             options,
             channel_credentials,
             insecure,
