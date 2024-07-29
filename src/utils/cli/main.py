@@ -9,12 +9,6 @@ def setup_cli_parser():
         epilog="Use it wisely!"
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        dest="verbose",
-    )
-    parser.add_argument(
         "-t",
         "--test_args",
         action="store_true",

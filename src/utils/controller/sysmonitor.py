@@ -42,7 +42,7 @@ class SystemMonitor(object):
     def memory_usage_median(self):
         return np.median(self.__memory_median)
 
-    async def request_resource_usage(self):
+    def request_resource_usage(self):
         result = requests.get("http://" + self.__agent_url + "/usage", timeout=3)
         if result.status_code == 200:
             cpu_usage = float(result.json()["cpu_usage"])
@@ -62,6 +62,7 @@ class SystemMonitor(object):
         # This process is needed to complete the current batch
         self.__cpu_usage_current_batch.append(cpu_usage)
         self.__memory_usage_current_batch.append(memory_usage)
+
         if len(self.__cpu_usage_current_batch) > self.__batch_size:
             # Save current batch to temporary file
             cpu_temporary_file = tempfile.TemporaryFile()
@@ -80,6 +81,8 @@ class SystemMonitor(object):
         memory_temporary_file = tempfile.TemporaryFile()
         self.__process_batch(cpu_temporary_file, self.__cpu_usage_current_batch)
         self.__process_batch(memory_temporary_file, self.__memory_usage_current_batch)
+        self.__cpu_usage_data_batch_files.append(cpu_temporary_file)
+        self.__memory_usage_data_batch_files.append(memory_temporary_file)
 
     def process_final_stats(self):
         cpu_data = self.__final_processing_batch(self.__cpu_usage_data_batch_files)
