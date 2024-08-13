@@ -59,6 +59,8 @@ def monitor_agent(args: argparse.Namespace):
 
     logger.info("Requesting detection reports from agent.")
 
+    time.sleep(2)
+
     reports = requests.get(f"http://{host}:{port}/reports", timeout=10)
     if reports.status_code != 200:
         logger.error(f"Failed to receive detection reports: {reports.status_code}")
@@ -150,8 +152,8 @@ Overall flow duration standard deviation: {overall_flow_duration_std}
             f"Failed to receive detection reports with status code {reports.status_code}, so the report summary will not provide further details."
         )
 
-    Path("./reports").resolve().mkdir()
-    Path("./reports/report.txt").resolve().touch()
+    Path("./reports").resolve().mkdir(exist_ok=True)
+    Path("./reports/report.txt").resolve().touch(exist_ok=True)
     with open(Path("./reports/report.txt"), "w") as f:
         for line in final_report_strings:
             f.write(line + "\n")

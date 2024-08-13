@@ -1,9 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from argparse import ArgumentParser
 from pathlib import Path
 import psutil
 import json
-import os
 
 app = FastAPI()
 
@@ -15,8 +14,9 @@ def get_usage():
     return {"cpu_usage": cpu_usage, "memory_usage": memory_usage}
 
 @app.get("/reports")
-def get_reports():
+def get_reports(response: Response):
     if report_file is None:
+        response.status_code = 400
         return {"error": "No report file specified"}
     try:
         rf_path = Path(report_file).resolve()
@@ -24,10 +24,8 @@ def get_reports():
             report = json.load(f)
         return report
     except Exception as e:
+        response.status_code = 500
         return {"error": f"Error reading report file: {str(e)}"}
-
-def parse_cli_args():
-    pass
 
 def cli_parser():
     parser = ArgumentParser(description="IDS Testbed Agent for IDSes")
