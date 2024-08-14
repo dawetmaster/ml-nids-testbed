@@ -69,19 +69,19 @@ def monitor_agent(args: argparse.Namespace):
         overall_recap = reports.json()["ml_data"]
 
         # Get the data series
-        ntp_run_durations = np.array([entry["run_duration_ntp"] for entry in overall_recap])
-        cpu_run_durations = np.array([entry["run_duration"] for entry in overall_recap])
+        ntp_run_durations = np.array([entry["run_duration_ntp"] for entry in overall_recap], dtype=float)
+        cpu_run_durations = np.array([entry["run_duration"] for entry in overall_recap], dtype=float)
 
-        overall_result = np.array([entry["result"] for entry in overall_recap])
-        number_of_flows = np.array([entry["number_of_flows"] for entry in overall_result])
+        overall_result = [entry["result"] for entry in overall_recap]
+        number_of_flows = np.array([entry["number_of_flows"] for entry in overall_result], dtype=float)
 
-        tp_data = np.array([entry["tp"] for entry in overall_result])
-        tn_data = np.array([entry["tn"] for entry in overall_result])
-        fp_data = np.array([entry["fp"] for entry in overall_result])
-        fn_data = np.array([entry["fn"] for entry in overall_result])
+        tp_data = np.array([entry["tp"] for entry in overall_result], dtype=float)
+        tn_data = np.array([entry["tn"] for entry in overall_result], dtype=float)
+        fp_data = np.array([entry["fp"] for entry in overall_result], dtype=float)
+        fn_data = np.array([entry["fn"] for entry in overall_result], dtype=float)
 
-        flow_duration_mean_data = np.array([r["flow_duration_mean"] for r in overall_result])
-        flow_duration_std_data = np.array([r["flow_duration_std"] for r in overall_result])
+        flow_duration_mean_data = np.array([r["flow_duration_mean"] for r in overall_result], dtype=float)
+        flow_duration_std_data = np.array([r["flow_duration_std"] for r in overall_result], dtype=float)
 
         # Calculate the stats
         ntp_run_duration_avg = np.nanmean(ntp_run_durations)
